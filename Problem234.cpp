@@ -8,41 +8,51 @@
  *     ListNode(int x, ListNode *next) : val(x), next(next) {}
  * };
  */
+
 class Solution {
 public:
     bool isPalindrome(ListNode* head) {
-        if(!head->next){return true;}
-        ListNode* tail = findMid(head);
-        ListNode* midHead = tail->next;
-        tail->next = nullptr;
-        ListNode* revMidHead = reverseList(midHead);
-        bool result = compare2Lists(head, revMidHead);
-        midHead = reverseList(revMidHead);
-        tail->next = midHead;
-        return result;
+        ListNode *mid = findMid(head);
+        ListNode *revHead = reverseList(mid->next);
+        ListNode *l = head;
+        ListNode *r = revHead;
+        bool isPal = true;
+        while (isPal && r) {
+            if (l->val != r->val) {
+                isPal = false;
+            }
+            l = l->next;
+            r = r->next;
+        }
+        return isPal;
     }
+
 private:
-    ListNode* findMid(ListNode* head){
-        ListNode *pre = head, *walk = head->next, *run = head->next->next;
-        while(run && run->next){
-            pre = pre->next, walk = walk->next, run = run->next->next;
+    ListNode *reverseList(ListNode* head) {
+        ListNode *prevNode = nullptr;
+        ListNode *currNode = head;
+        ListNode *nextNode = head ? head->next : head;
+        while (currNode) {
+            currNode->next = prevNode;
+            prevNode = currNode;
+            currNode = nextNode;
+            nextNode = nextNode ? nextNode->next : nextNode;
         }
-        return pre;
+        return prevNode;
     }
-    ListNode* reverseList(ListNode* head){
-        ListNode *pre = nullptr, *curr = head;
-        while(curr){
-            ListNode* temp = curr->next;
-            curr->next = pre;
-            pre = curr, curr = temp;
+
+    ListNode *findMid(ListNode* head) {
+        ListNode *walk = head;
+        ListNode *run = head;
+        while (run->next && run->next->next) {
+            run = run->next->next;
+            walk = walk->next;
         }
-        return pre;
-    }
-    bool compare2Lists(ListNode* head1, ListNode* head2){
-        while(head1 && head2){
-            if(head1->val != head2->val){return false;}
-            head1 = head1->next, head2 = head2->next;
-        }
-        return true;
+        return walk;
     }
 };
+
+// linked list
+// time: O(n)
+// space: O(1)
+
